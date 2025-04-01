@@ -1,0 +1,93 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="FullFeaturedSuite" verbose="2" parallel="tests" thread-count="3" configfailurepolicy="continue">
+
+    <!-- Параметры уровня suite -->
+    <parameter name="env" value="staging"/>
+    <parameter name="browser" value="chrome"/>
+
+    <!-- Глобальные слушатели -->
+    <listeners>
+        <listener class-name="com.utils.TestReporter"/>
+        <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+    </listeners>
+
+    <!-- Общие группы для всех тестов -->
+    <groups>
+        <define name="all">
+            <include name="smoke"/>
+            <include name="regression"/>
+        </define>
+
+        <define name="mobile">
+            <include name="android"/>
+            <include name="ios"/>
+        </define>
+
+        <run>
+            <include name="all"/>
+            <exclude name="broken"/>
+        </run>
+    </groups>
+
+    <!-- Тест 1: API Тесты -->
+    <test name="API_Tests" preserve-order="true" parallel="methods" thread-count="5">
+        <parameter name="api-version" value="v2"/>
+
+        <classes>
+            <class name="com.api.AuthTest">
+                <methods>
+                    <include name="testLogin.*"/>
+                    <exclude name="testLegacyAuth"/>
+                </methods>
+            </class>
+            <class name="com.api.PaymentTest"/>
+        </classes>
+    </test>
+
+    <!-- Тест 2: UI Тесты -->
+    <test name="UI_Tests" enabled="true">
+        <parameter name="headless" value="false"/>
+
+        <packages>
+            <package name="com.ui.*"/>
+        </packages>
+    </test>
+
+    <!-- Тест 3: Мобильные тесты -->
+    <test name="Mobile_Tests" depends-on="API_Tests" success-percentage="80">
+        <groups>
+            <run>
+                <include name="mobile"/>
+                <include name="regression" unless-system-property="ci"/>
+            </run>
+        </groups>
+
+        <classes>
+            <class name="com.mobile.iOS.SmokeTest"/>
+            <class name="com.mobile.Android.FullRegressionTest"/>
+        </classes>
+    </test>
+
+    <!-- Тест 4: DataProvider Тесты -->
+    <test name="DataDriven_Tests">
+        <method-selectors>
+            <method-selector>
+                <script language="beanshell"><![CDATA[
+                    return method.getName().contains("DataTest");
+                ]]></script>
+            </method-selector>
+        </method-selectors>
+
+        <classes>
+            <class name="com.data.ExcelDataTest"/>
+            <class name="com.data.DatabaseTest"/>
+        </classes>
+    </test>
+
+    <!-- Тест 5: Параллельные тесты -->
+    <test name="Parallel_Tests" parallel="instances" thread-count="4">
+        <factory>
+            <class name="com.factories.ParallelTestFactory"/>
+        </factory>
+    </test>
+</suite>
