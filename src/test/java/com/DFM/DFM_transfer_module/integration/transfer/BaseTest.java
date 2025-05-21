@@ -1,15 +1,13 @@
-package com.Backend;
+package com.DFM.DFM_transfer_module.integration.transfer;
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
+import com.DFM.DFM_transfer_module.helpers.SqlHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.*;
 
-public class BaseTest {
+@SpringBootTest
+public class BaseTest extends AbstractTestNGSpringContextTests {
 
     @BeforeSuite
     public void beforeSuite() {
@@ -50,4 +48,20 @@ public class BaseTest {
     public void afterSuite() {
         System.out.println("After Suite - выполняется один раз после всех тестов в наборе");
     }
+
+
+/*
+    Тут BaseTest создал объект класса SqlHelper и затянул к себе и далее у наследников класса BaseTest н/п: TransferTest extends BaseTest
+    появляется возможность пользоваться тем что есть у BaseTest.
+    int clubBalanceBeforeTransfer = getClubBalance(club.getId(), getSqlHelper()); - в классе TransferTest я закинул
+    переменную sqlHelper в параметр метода clubBalanceBeforeTransfer через геттер getSqlHelper()
+    и далее просто в этом методе через переменную в параметре sqlHelper я дотягиваюсь до метода класса SqlHelper -> getConnection().
+*/
+    @Autowired
+    public SqlHelper sqlHelper;
+
+    public SqlHelper getSqlHelper() {
+        return sqlHelper;
+    }
+
 }

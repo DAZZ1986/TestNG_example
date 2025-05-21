@@ -36,10 +36,5 @@
       <option name="name" value="archetype_company_repo" />
       <option name="url" value="https://srv-nexus-3.bftcom.com/repository/ice-dev" />
     </remote-repository>
-    <remote-repository>
-      <option name="id" value="allure" />
-      <option name="name" value="allure" />
-      <option name="url" value="https://repo.maven.apache.org/maven2" />
-    </remote-repository>
   </component>
 </project>
